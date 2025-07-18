@@ -1,0 +1,8 @@
+m ihex_line.mrg
+n 4001
+c ihex_line
+d ushort byte_len
+d int byte_loc
+d ushort rec_type
+d ushort data[16]
+d ushort cksum

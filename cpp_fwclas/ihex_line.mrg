@@ -1,0 +1,88 @@
+h:ihex_line
+ihex_line(strlnk*); //constructor from strlnk (hex file line)
+ihex_line(strlnk*,int); //constructor from strlnk (int=1 to ignore cksum)
+void gen_str(strlnk* &); //create strlnk from ihex_line for hex file
+ihex_line(ushort,int,ushort,ushort*); //constructor from array
+/h:
+cc:ihex_line
+ihex_line::ihex_line(strlnk* si):vbc_link(){
+  ushort icksum=0;
+  byte_len=si->hex_to_uns(1,2);
+  icksum+=byte_len;
+  byte_loc=si->hex_to_uns(3,4);
+  icksum+=byte_loc%256;
+  icksum+=byte_loc/256;
+  rec_type=si->hex_to_uns(7,2);
+  icksum+=rec_type;
+  for(int i=0;i<byte_len;i++) {
+    data[i]=(si->hex_to_uns((9+i*2),2));
+    icksum+=data[i];
+   }
+  icksum=-icksum & 0xff;
+  cksum=si->hex_to_uns(si->strlnk_len-2,2);
+  if (cksum!=icksum) {
+   cout<<hex<<"icksum: "<<icksum<<" cksum: "<<cksum<<"\n";
+   cerr<<"CHECKSUM ERROR, input line:\n";
+   cerr<<*si<<"\n";
+   exit(1);
+  }
+}
+
+ihex_line::ihex_line(strlnk* si,int ignore):vbc_link(){
+  ushort icksum=0;
+  byte_len=si->hex_to_uns(1,2);
+  icksum+=byte_len;
+  byte_loc=si->hex_to_uns(3,4);
+  icksum+=byte_loc%256;
+  icksum+=byte_loc/256;
+  rec_type=si->hex_to_uns(7,2);
+  icksum+=rec_type;
+  for(int i=0;i<byte_len;i++) {
+    data[i]=(si->hex_to_uns((9+i*2),2));
+    icksum+=data[i];
+   }
+  icksum=-icksum & 0xff;
+  cksum=si->hex_to_uns(si->strlnk_len-2,2);
+  if ((cksum!=icksum)&&(ignore!=1)) {
+   cerr<<"CHECKSUM ERROR, input line:\n";
+   cout<<hex<<"computed: "<<icksum<<" observed: "<<cksum<<"\n";
+   cerr<<*si<<"\n";
+   exit(1);
+  }
+}
+
+ihex_line::ihex_line(ushort len,int loc,ushort rec_type,
+ushort *dat):vbc_link(){
+byte_len=len;
+cksum=byte_len;
+byte_loc=loc;
+cksum+=byte_loc/256;
+cksum+=byte_loc%256;
+for (int i=0;i<byte_len;i++){
+data[i]=dat[i];
+cksum+=data[i];
+}
+cksum=-cksum & 0xff;
+}
+
+void ihex_line::gen_str(strlnk* &line) {
+ line=new strlnk(":10"); // length
+ int cksum=16;
+ strlnk* a=new strlnk();
+ a->to_hex(byte_loc,4);
+ *line+=*a;
+ cksum+=byte_loc/256;
+ cksum+=byte_loc%256;
+ *line+="00";
+ for (int i=0;i<byte_len;i++) {
+  cksum+=data[i];
+  a->to_hex(data[i],2);
+  *line+=*a;
+  }
+ a->to_hex(-cksum,2); //checksum
+ *line+=*a;
+ delete(a);
+}
+/cc:
+
+

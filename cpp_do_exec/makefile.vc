@@ -1,0 +1,16 @@
+! include <win32.mak>
+
+CNL= $(cc) $(cdebug) $(cflags) /EHsc $(cvarsmt) /I $(REA_LIB)\include
+LCMD= $(link) $(ldebug) $(conlflags) /LIBPATH:$(REA_LIB)\lib
+LXLIB= $(conlibsmt) lists.lib
+DIFCMD= diff 
+CPCMD= xcopy /Y
+DELCMD= del
+# multithreaded apps, static crt.
+
+ALL: $(REA_BIN)\do_exec.exe
+
+$(REA_BIN)\do_exec.exe: do_exec.cc $(REA_LIB)\lib\lists.lib
+	$(CNL) /Tp do_exec.cc
+	$(LCMD) /out:$(REA_BIN)\do_exec.exe do_exec.obj $(LXLIB) 
+

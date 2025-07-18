@@ -1,0 +1,35 @@
+i:
+#include <gzstream.h>
+/i:
+h:hexim
+hexim(char*); //read a hex file into data
+/h:
+cc:hexim
+hexim::hexim(char* ihexname):vbc_link(){
+ name=0;
+ for (auto i:data) data[i]=0;
+ rlist* hexf=new rlist(ihexname);
+ strlnk* lineis=(strlnk*)(hexf->head);
+ int data_ptr;
+ strlnk* val,*loc;
+ while (lineis) {
+  val=lineis->extract(7,8); // record type
+  loc=lineis->extract(3,6); // hex byte loc
+  data_ptr=loc->hex_to_uns(4);
+  delete(loc);
+  if (*val == "00"){ // get the data
+   delete(val);
+   while((lineis->strlnk_len)>8){ // comes in 2 byte groups
+    val=lineis->extract(3,4);
+    data[data_ptr+1]=val->hex_to_uns(2);
+    delete(val);
+    val=lineis->extract(3,4);
+    data[data_ptr]=val->hex_to_uns(2);
+    delete(val);
+    data_ptr+=2;
+   }}
+   else delete(val);
+  lineis=(strlnk*)(lineis->n);
+  }
+ }
+/cc:
