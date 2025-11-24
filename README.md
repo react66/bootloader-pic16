@@ -13,3 +13,5 @@ cpp_fwclass contains ihex_line.cc used for managing lines of intel hex data read
 cpp_serlnk contains serlnk.cc used for serial interface.
 
 pic16f15344,345 are the assembler bootloaders. Once the pic is programmed with the stub hex file, hexldr can be used to program it with any hex files.
+
+1-wire_interface contains schematics for 2 versions of the USB to serial interface used by the hexldr program.
