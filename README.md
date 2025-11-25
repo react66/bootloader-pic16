@@ -4,6 +4,8 @@ pic16 assembly level bootloader and c++ hex loader
 All makefiles assumes the existence of ~/include, ~/lib and ~/bin. Files are assembled using gpasm, a part of gputils.
 gputils can be found here: https://gputils.sourceforge.io/
 
+This project is reflected on sourceforge under the same name.
+
 cpp_hexldr is the general hex file loader for the PIC16[l]f15344,345. The loader makes use of the other programs and make will need to be run for each one. hexldr.cc allows scatterload, while hexldr_ns.cc does not allow scatterload so the hex file must have the pagesel, goto init as the first 2 enteries in block 0.
 
 cpp_do_exec contains exec_call.cc used for calling OS functions from the hexldr program.
